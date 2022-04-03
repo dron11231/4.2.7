@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    
+}
+
+.app-window {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    background-color: #C4C4C4;
+    width: 600px;
+    padding: 3rem 4rem;
+}
+
+.container__app-window {
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+
+.search-input {
+    font-size: 3rem;
+    height: 3.5rem;
+    width: 100%;
+    border: none;
+    box-sizing: border-box;
+}
+
+.search-wrapper__repositories-list {
+    margin: 0;
+}
+
+.repositories-list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.repositories-list__item {
+    background-color: #E3E3E3;
+    border: 2px solid black;
+    padding: 0 0 0.5rem 0.8rem;
+    font-size: 1.7rem;
+    display: none;
+    cursor: pointer;
+}
+
+.repositories-list__item:hover {
+    background-color: #65CDF9;
+}
+
+.repositories-list__item:focus {
+    background-color: #65CDF9;
+}
+
+.added-repositories {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.added-repositories__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #E27BEB;
+    padding: 0.5rem 1rem;
+    border: 1px solid black;
+    font-size: 1.1rem;
+}
+
+.added-repositories__data {
+    display: flex;
+    flex-direction: column;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
