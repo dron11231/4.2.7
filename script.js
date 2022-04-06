@@ -93,4 +93,7 @@ resultList.addEventListener('click', async (e) => {
         }
     })
     input.value = '';
+    resultListItems.forEach(el => {
+        el.style.display = 'none'
+    })
 })
