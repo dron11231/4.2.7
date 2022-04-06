@@ -8,8 +8,10 @@ const debounceWrapper = () => {
   let timerId;
 
   return async function() {
-    const response = await (await fetch('https://api.github.com/search/repositories?q=w')).json(); 
-    const callBack = () =>  {
+    
+    const callBack = async () =>  {
+        console.log('запрос')
+        const response = await (await fetch('https://api.github.com/search/repositories?q=w')).json(); 
         const repositories = response.items;
         const names = []
         const inputValue = input.value;
@@ -38,7 +40,6 @@ const debounceWrapper = () => {
     }
     clearTimeout(timerId)
     timerId = setTimeout(callBack, 500)
-    return response.items;
   }
 };
 
@@ -62,7 +63,8 @@ resultList.addEventListener('click', async (e) => {
     repositoryStars.classList.add('added-repositories__text');       
     removeBtn.classList.add('remove-btn');
     
-    const repositories = await debounce();
+    const response = await (await fetch('https://api.github.com/search/repositories?q=w')).json();
+    const repositories = response.items;
     const selectedName = e.target.textContent;
 
     repositories.forEach(repos => {
@@ -85,4 +87,3 @@ resultList.addEventListener('click', async (e) => {
     })
     input.value = '';
 })
-
