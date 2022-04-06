@@ -10,9 +10,12 @@ const debounceWrapper = () => {
   return async function() {
     
     const callBack = async () =>  {
-        console.log('запрос')
-        const response = await (await fetch('https://api.github.com/search/repositories?q=w')).json(); 
-        const repositories = response.items;
+        const response = await fetch('https://api.github.com/search/repositories?q=w');
+        const jsonResponse = await response.json() 
+        if (response.status === 403) {
+            alert('Превышено допустимое количество запросов на сервер')
+        }
+        const repositories = jsonResponse.items;
         const names = []
         const inputValue = input.value;
         const foundNames = [];
@@ -63,8 +66,12 @@ resultList.addEventListener('click', async (e) => {
     repositoryStars.classList.add('added-repositories__text');       
     removeBtn.classList.add('remove-btn');
     
-    const response = await (await fetch('https://api.github.com/search/repositories?q=w')).json();
-    const repositories = response.items;
+    const response = await fetch('https://api.github.com/search/repositories?q=w');
+    const jsonResponse = await response.json() 
+    if (response.status === 403) {
+        alert('Превышено допустимое количество запросов на сервер')
+    }
+    const repositories = jsonResponse.items;
     const selectedName = e.target.textContent;
 
     repositories.forEach(repos => {
