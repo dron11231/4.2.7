@@ -15,7 +15,7 @@ const debounceWrapper = () => {
 const debounce = debounceWrapper();
 input.addEventListener("input", debounce);
 
-resultList.addEventListener("click", async (e) => {
+const addRepository = async (e) => {
   const addedRepository = document.createElement("li");
   const repositoryInfo = document.createElement("div");
   const repositoryName = document.createElement("span");
@@ -64,7 +64,7 @@ resultList.addEventListener("click", async (e) => {
   resultListItems.forEach((el) => {
     el.style.display = "none";
   });
-});
+};
 
 const getResponse = async () => {
   const response = await fetch(
@@ -99,5 +99,10 @@ const getResponse = async () => {
     } else {
       el.style.display = "none";
     }
+  });
+
+  resultList.addEventListener("click", function addHandler(e) {
+    addRepository(e);
+    resultList.removeEventListener("click", addHandler);
   });
 };
