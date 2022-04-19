@@ -15,7 +15,7 @@ const debounceWrapper = () => {
 const debounce = debounceWrapper();
 input.addEventListener("input", debounce);
 
-resultList.addEventListener("click", async function addRepository(e) {
+resultList.addEventListener("click", async (e) => {
   const addedRepository = document.createElement("li");
   const repositoryInfo = document.createElement("div");
   const repositoryName = document.createElement("span");
