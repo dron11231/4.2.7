@@ -4,16 +4,20 @@ const resultListItems = document.querySelectorAll(".repositories-list__item");
 const addedRepositoriesList = document.querySelector(".added-repositories");
 const appWindow = document.querySelector(".app-window");
 
-const debounceWrapper = () => {
+const debounce = (fn, dbTime) => {
   let timerId;
   return () => {
+    const fnCall = () => {
+      fn();
+    };
     clearTimeout(timerId);
-    timerId = setTimeout(getResponse, 500);
+    timerId = setTimeout(fnCall, dbTime);
   };
 };
 
-const debounce = debounceWrapper();
-input.addEventListener("input", debounce);
+const debounceResponse = debounce(getResponse, 500);
+
+input.addEventListener("input", debounceResponse);
 
 const addRepository = async (e) => {
   const addedRepository = document.createElement("li");
@@ -31,78 +35,86 @@ const addRepository = async (e) => {
   repositoryOwner.classList.add("added-repositories__text");
   repositoryStars.classList.add("added-repositories__text");
   removeBtn.classList.add("remove-btn");
+  try {
+    const response = await fetch(
+      `https://api.github.com/search/repositories?q=${input.value}`
+    );
+    const jsonResponse = await response.json();
+    const repositories = jsonResponse.items;
+    const selectedName = e.target.textContent;
 
-  const response = await fetch(
-    "https://api.github.com/search/repositories?q=w"
-  );
-  const jsonResponse = await response.json();
-  if (response.status === 403) {
-    alert("Превышено допустимое количество запросов на сервер");
-  }
-  const repositories = jsonResponse.items;
-  const selectedName = e.target.textContent;
+    repositories.forEach((repos) => {
+      if (selectedName === repos.name) {
+        repositoryName.innerHTML = `Name: ${repos.name}`;
+        repositoryOwner.innerHTML = `Owner: ${repos.owner.login}`;
+        repositoryStars.innerHTML = `Stars: ${repos.stargazers_count}`;
 
-  repositories.forEach((repos) => {
-    if (selectedName === repos.name) {
-      repositoryName.innerHTML = `Name: ${repos.name}`;
-      repositoryOwner.innerHTML = `Owner: ${repos.owner.login}`;
-      repositoryStars.innerHTML = `Stars: ${repos.stargazers_count}`;
+        repositoryInfo.append(repositoryName, repositoryOwner, repositoryStars);
+        removeBtn.append(crossImg);
+        addedRepository.append(repositoryInfo, removeBtn);
+        addedRepository.append(removeBtn);
+        addedRepositoriesList.append(addedRepository);
 
-      repositoryInfo.append(repositoryName, repositoryOwner, repositoryStars);
-      removeBtn.append(crossImg);
-      addedRepository.append(repositoryInfo, removeBtn);
-      addedRepository.append(removeBtn);
-      addedRepositoriesList.append(addedRepository);
-
-      removeBtn.addEventListener("click", function remover() {
-        addedRepository.remove();
-        removeBtn.removeEventListener("click", remover);
-      });
-    }
-  });
-  input.value = "";
-  resultListItems.forEach((el) => {
-    el.style.display = "none";
-  });
-};
-
-const getResponse = async () => {
-  const response = await fetch(
-    "https://api.github.com/search/repositories?q=w"
-  );
-  const jsonResponse = await response.json();
-  if (response.status === 403) {
-    console.log(jsonResponse);
-    alert("Превышено допустимое количество запросов на сервер");
-  }
-  const repositories = jsonResponse.items;
-  const names = [];
-  const inputValue = input.value;
-  const foundNames = [];
-
-  repositories.forEach((repos) => {
-    names.push(repos.name);
-  });
-  if (inputValue !== "") {
-    const regExp = new RegExp(inputValue, "i");
-
-    names.forEach((name) => {
-      if (name.match(regExp)) {
-        foundNames.push(name);
+        removeBtn.addEventListener("click", function remover() {
+          addedRepository.remove();
+          removeBtn.removeEventListener("click", remover);
+        });
       }
     });
-  }
-  resultListItems.forEach((el, idx) => {
-    el.innerHTML = foundNames[idx];
-    if (el.textContent !== "" && el.textContent !== "undefined") {
-      el.style.display = "block";
-    } else {
+    input.value = "";
+    resultListItems.forEach((el) => {
       el.style.display = "none";
-    }
-  });
-
-  resultList.addEventListener("click", function addHandler(e) {
-    addRepository(e);
-    resultList.removeEventListener("click", addHandler);
-  });
+    });
+  } catch (err) {
+    alert("Достигнут лимит запросов на сервер");
+  }
 };
+
+async function getResponse() {
+  if (input.value !== "") {
+    try {
+      const response = await fetch(
+        `https://api.github.com/search/repositories?q=${input.value}`
+      );
+      const jsonResponse = await response.json();
+      if (response.status === 403) {
+        console.log(jsonResponse);
+      }
+      const repositories = jsonResponse.items;
+      const names = [];
+      const inputValue = input.value;
+      const foundNames = [];
+
+      repositories.forEach((repos) => {
+        names.push(repos.name);
+      });
+      if (inputValue !== "") {
+        const regExp = new RegExp(inputValue, "i");
+
+        names.forEach((name) => {
+          if (name.match(regExp)) {
+            foundNames.push(name);
+          }
+        });
+      }
+      resultListItems.forEach((el, idx) => {
+        el.innerHTML = foundNames[idx];
+        if (el.textContent !== "" && el.textContent !== "undefined") {
+          el.style.display = "block";
+        } else {
+          el.style.display = "none";
+        }
+      });
+      resultList.addEventListener("click", function addHandler(e) {
+        addRepository(e);
+        resultList.removeEventListener("click", addHandler);
+      });
+    } catch (err) {
+      alert("Достигнут лимит запросов на сервер");
+    }
+  } else {
+    resultListItems.forEach((el) => {
+      el.style.display = "none";
+    });
+  }
+}
